@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" defer src="script.js"></script>
+    <link rel="stylesheet" href="https://use.typekit.net/zmm3urh.css">
+</head>
+<script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
+
+<body>
+    <div class="content">
+        <div class="game">
+            <button class="theme-toggle" id="theme-toggle">🌙</button>
+            <h1>Tic-Tac-Toe</h1>
+            <p class="status" id="status">Player X's turn</p>
+            <div class="board" id="board">
+                <div class="block" data-index="0"></div>
+                <div class="block" data-index="1"></div>
+                <div class="block" data-index="2"></div>
+                <div class="block" data-index="3"></div>
+                <div class="block" data-index="4"></div>
+                <div class="block" data-index="5"></div>
+                <div class="block" data-index="6"></div>
+                <div class="block" data-index="7"></div>
+                <div class="block" data-index="8"></div>
+            </div>
+            <button class="btn" id="reset-btn">New Game</button>
+            <button class="btn btn-mode" id="mode">Mode: 1 Player (Hard)</button>
+        </div>
+        <div class="scoreboard">
+            <h2>Scoreboard</h2>
+            <div class="scores">
+                <div class="scorebox"><span id="player1">YOU -</span><span id="scoreX">0</span></div>
+                <div class="scorebox"><span id="player2">COM -</span><span id="scoreO">0</span></div>
+                <div class="scorebox"><span>DRAWS -</span><span id="scoreDraw">0</span></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

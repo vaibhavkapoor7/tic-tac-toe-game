@@ -1,0 +1,215 @@
+:root {
+    --bg-dark: #000000;
+    --bg-gradient: linear-gradient(135deg, #02020a 0%, #151540 100%);
+    --card-bg: linear-gradient(135deg, #21213d 30%, #2d2d55 90%);
+    --block-bg: #3d3d6b;
+    --block-hover: #4d4d7d;
+    --text-main: #ffffff;
+    --text-sub: #cccccc;
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.5);
+    --text-glow: 0 0 10px rgba(255, 255, 255, 0.5);
+    --font-main: "vox-round", sans-serif;
+    --color-x: #4deeea;
+    --color-o: #f000ff;
+    --glow-x: 0 0 10px #4deeea;
+    --glow-o: 0 0 10px #f000ff;
+    --btn-bg: #000000;
+    --btn-text: #ffffff;
+}
+
+[data-theme="light"] {
+    --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    --card-bg: #ffffff;
+    --block-bg: #e0e0e0;
+    --block-hover: #e0e0e0;
+    --text-main: #333333;
+    --text-sub: #555555;
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --color-x: #00a8a8;
+    --color-o: #b800b8;
+    --glow-x: none;
+    --glow-o: none;
+    --btn-bg: #333333;
+    --btn-text: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-main);
+}
+
+body {
+    height: 100vh;
+    background: var(--bg-gradient);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: var(--text-main);
+    transition: background 0.5s ease;
+    padding: 20px;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+}
+
+.game {
+    background: var(--card-bg);
+    box-shadow: var(--shadow-card);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 300px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.082);
+    position: relative;
+    transition: background 0.5s ease, box-shadow 0.5s ease;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 10;
+}
+
+h1 {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.status {
+    margin-bottom: 15px;
+    font-size: 1rem;
+    color: var(--text-sub);
+    min-height: 1.2rem;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+    background-color: var(--bg-dark);
+    padding: 10px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+    aspect-ratio: 1/1;
+}
+
+.block {
+    background-color: var(--block-bg);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: clamp(2rem, 10vw, 3rem);
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+    height: 100%;
+}
+
+.block:hover {
+    background-color: var(--block-hover);
+}
+
+.block.x {
+    color: var(--color-x);
+    text-shadow: var(--glow-x);
+}
+
+.block.o {
+    color: var(--color-o);
+    text-shadow: var(--glow-o);
+}
+
+.block.taken {
+    cursor: not-allowed;
+}
+
+.btn {
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-family: var(--font-main);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+    transition: transform 0.1s;
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+.scoreboard {
+    background-color: var(--bg-gradient);
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+    max-width: 400px;
+    color: var(--text-main);
+    border: 1px solid rgba(255, 255, 255, 0.082);
+    transition: background 0.5s ease, box-shadow 0.5s ease;
+}
+.scores {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 10px;
+}
+.scorebox {
+    background-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    padding: 6px 5px;
+    border-radius: 6px;
+    font-size: 0.5rem;
+    font-weight: 700;
+    min-width: 120px;
+    text-align: center;
+    font-weight: 700;
+    flex: 1;
+    text-align: center;
+    display: flex;
+    font-size: 1rem;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.559);
+
+}
+
+.scorebox span {
+    margin-top: 5px;
+    font-size: 1rem;
+    display: block;
+}

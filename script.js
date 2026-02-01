@@ -15,7 +15,7 @@ const winningConditions = [
     [2, 5, 8],
     [0, 4, 8],
     [2, 4, 6]
-];  
+];
 import { GoogleGenerativeAI } from "@google/generative-ai";
 const API_KEY = "AIzaSyBuPudufoHKnAmAduBPacdOvruqke9d_IE";
 
@@ -30,7 +30,7 @@ const scoreXDisplay = document.getElementById('scoreX');
 const scoreODisplay = document.getElementById('scoreO');
 const scoreDrawDisplay = document.getElementById('scoreDraw');
 
-blocks.forEach(block=> block.addEventListener('click', handleBlockClick));
+blocks.forEach(block => block.addEventListener('click', handleBlockClick));
 modeBtn.addEventListener('click', togglemode);
 document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
 document.querySelector('.btn:not(.btn-mode)').addEventListener('click', resetGame);
@@ -48,9 +48,9 @@ function resetGame() {
     gameActive = true;
     currentPlayer = 'X';
     statusDisplay.innerText = `Player ${currentPlayer} turn`;
-    blocks.forEach(block => 
-        {block.innerText = '';
-         block.className = 'block';
+    blocks.forEach(block => {
+        block.innerText = '';
+        block.className = 'block';
     });
 };
 function toggleTheme() {
@@ -72,11 +72,11 @@ function handleBlockClick(event) {
 function processMove(block, index) {
     updateBlock(block, index, currentPlayer);
     if (checkResult()) return;
-    
+
     currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
     const Mode = modes[currentModeIndex];
-    
-    if (Mode === 'pvp'){
+
+    if (Mode === 'pvp') {
         statusDisplay.innerText = `Player ${currentPlayer} turn`;
     }
     else {
@@ -91,20 +91,20 @@ function processMove(block, index) {
             statusDisplay.innerText = `Your turn`;
         }
     }
-} 
+}
 function updateBlock(block, index, player) {
-            board[index] = player;
-            block.innerText = player;
-            block.classList.add(player.toLowerCase());
-            block.classList.add('taken');
-        }        
+    board[index] = player;
+    block.innerText = player;
+    block.classList.add(player.toLowerCase());
+    block.classList.add('taken');
+}
 async function makeGeminiMove() {
-            if (!gameActive) return;
+    if (!gameActive) return;
 
-            // Create a description of the board state for Gemini
-            let boardDescription = board.map((val, idx) => val === '' ? idx : val).join(',');
+    // Create a description of the board state for Gemini
+    let boardDescription = board.map((val, idx) => val === '' ? idx : val).join(',');
 
-            const prompt = `
+    const prompt = `
                 You are playing Tic-Tac-Toe. You are 'O'.
                 The board is a 1D array of 9 positions (0-8).
                 Current board state: [${boardDescription}]
@@ -115,79 +115,79 @@ async function makeGeminiMove() {
                 CRITICAL: Return ONLY the number (0-8) of your move. Do not write any words.
             `;
 
-            try {
-                const result = await model.generateContent(prompt);
-                const response = await result.response;
-                let moveText = response.text().trim();
-                
-                let moveIndex = parseInt(moveText.replace(/[^\d]/g, ''));
-                if (isNaN(moveIndex) || board[moveIndex] !== '') {
-                    console.warn("AI attempted invalid move:", moveIndex, "Falling back to random.");
-                    computerMoveEasy(); 
-                } else {
-                    const cell = document.querySelector(`.block[data-index='${moveIndex}']`);
-                    processMove(cell, moveIndex);
-                }
+    try {
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        let moveText = response.text().trim();
 
-            } catch (error) {
-                console.error("Error calling Gemini API:", error);
-                statusDisplay.innerText = "API ERROR - TRYING RANDOM MOVE";
-                setTimeout(computerMoveEasy, 1000);
-            }
-        }        
-        function computerMoveEasy() {
-            if (!gameActive) return;
-            const available = board.map((v, i) => v === '' ? i : null).filter(v => v !== null);
-            
-            if (available.length > 0) {
-                const randomIndex = available[Math.floor(Math.random() * available.length)];
-                const block = document.querySelector(`.block[data-index='${randomIndex}']`);
-                processMove(block, randomIndex);
-            }
+        let moveIndex = parseInt(moveText.replace(/[^\d]/g, ''));
+        if (isNaN(moveIndex) || board[moveIndex] !== '') {
+            console.warn("AI attempted invalid move:", moveIndex, "Falling back to random.");
+            computerMoveEasy();
+        } else {
+            const cell = document.querySelector(`.block[data-index='${moveIndex}']`);
+            processMove(cell, moveIndex);
         }
 
-        function checkResult() {
-            let roundWon = false;
-            let winner = null;
+    } catch (error) {
+        console.error("Error calling Gemini API:", error);
+        statusDisplay.innerText = "API ERROR - TRYING RANDOM MOVE";
+        setTimeout(computerMoveEasy, 1000);
+    }
+}
+function computerMoveEasy() {
+    if (!gameActive) return;
+    const available = board.map((v, i) => v === '' ? i : null).filter(v => v !== null);
 
-            for (let i = 0; i < winningConditions.length; i++) {
-                const [a, b, c] = winningConditions[i];
-                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-                    roundWon = true;
-                    winner = board[a];
-                    break;
-                }
-            }
+    if (available.length > 0) {
+        const randomIndex = available[Math.floor(Math.random() * available.length)];
+        const block = document.querySelector(`.block[data-index='${randomIndex}']`);
+        processMove(block, randomIndex);
+    }
+}
 
-            if (roundWon) {
-                statusDisplay.innerText = winner === 'X' ? "Player X Wins!" : "Player O Wins!";
-                gameActive = false;
-                scores[winner]++;
-                updateScores();
-                return true;
-            }
+function checkResult() {
+    let roundWon = false;
+    let winner = null;
 
-            if (!board.includes('')) {
-                statusDisplay.innerText = "Draw!";
-                gameActive = false;
-                scores.Draw++;
-                updateScores();
-                return true;
-            }
-
-            return false;
+    for (let i = 0; i < winningConditions.length; i++) {
+        const [a, b, c] = winningConditions[i];
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+            roundWon = true;
+            winner = board[a];
+            break;
         }
+    }
 
-        function updateScores() {
-            scoreXDisplay.innerText = scores.X;
-            scoreODisplay.innerText = scores.O;
-            scoreDrawDisplay.innerText = scores.Draw;
-        }
-        
-        function updateModesUI() {
+    if (roundWon) {
+        statusDisplay.innerText = winner === 'X' ? "Player X Wins!" : "Player O Wins!";
+        gameActive = false;
+        scores[winner]++;
+        updateScores();
+        return true;
+    }
+
+    if (!board.includes('')) {
+        statusDisplay.innerText = "Draw!";
+        gameActive = false;
+        scores.Draw++;
+        updateScores();
+        return true;
+    }
+
+    return false;
+}
+
+function updateScores() {
+    scoreXDisplay.innerText = scores.X;
+    scoreODisplay.innerText = scores.O;
+    scoreDrawDisplay.innerText = scores.Draw;
+}
+
+function updateModesUI() {
     const Mode = modes[currentModeIndex];
     if (Mode === 'hard') {
-        modeBtn.innerText = 'Mode: 1 Player (Hard)';  
+        modeBtn.innerText = 'Mode: 1 Player (Hard)';
         playerX.innerText = 'YOU -';
         playerO.innerText = 'COM -';
     }
@@ -202,5 +202,5 @@ async function makeGeminiMove() {
         playerO.innerText = 'PLAYER 2 -';
     }
 }
- updateModesUI();
-        updateScores(); 
+updateModesUI();
+updateScores(); 

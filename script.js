@@ -17,7 +17,7 @@ const winningConditions = [
     [2, 4, 6]
 ];
 import { GoogleGenerativeAI } from "@google/generative-ai";
-const API_KEY = "AIzaSyBuPudufoHKnAmAduBPacdOvruqke9d_IE";
+const API_KEY = "-- YOUR API KEY HERE --";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });

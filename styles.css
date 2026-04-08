@@ -15,6 +15,10 @@
     --glow-o: 0 0 10px #f000ff;
     --btn-bg: #000000;
     --btn-text: #ffffff;
+    --surface-strong: rgba(0, 0, 0, 0.72);
+    --surface-soft: rgba(255, 255, 255, 0.06);
+    --border-soft: rgba(255, 255, 255, 0.14);
+    --input-bg: rgba(0, 0, 0, 0.22);
 }
 
 [data-theme="light"] {
@@ -31,6 +35,10 @@
     --glow-o: none;
     --btn-bg: #333333;
     --btn-text: #ffffff;
+    --surface-strong: rgba(255, 255, 255, 0.92);
+    --surface-soft: rgba(0, 0, 0, 0.04);
+    --border-soft: rgba(0, 0, 0, 0.12);
+    --input-bg: rgba(255, 255, 255, 0.9);
 }
 
 * {
@@ -41,25 +49,24 @@
 }
 
 body {
-    height: 100vh;
     background: var(--bg-gradient);
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     color: var(--text-main);
     transition: background 0.5s ease;
-    padding: 20px;
+    padding: 24px 16px;
 }
 
 .content {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
     width: 100%;
     flex-direction: column;
+    gap: 20px;
 }
 
 .game {
@@ -71,10 +78,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 90%;
-    max-width: 300px;
-    margin-bottom: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.082);
+    width: min(100%, 360px);
+    border: 1px solid var(--border-soft);
     position: relative;
     transition: background 0.5s ease, box-shadow 0.5s ease;
 }
@@ -88,12 +93,97 @@ body {
     font-size: 1.2rem;
     cursor: pointer;
     z-index: 10;
+    color: var(--text-main);
 }
 
 h1 {
     font-size: clamp(1.5rem, 5vw, 2rem);
     margin-bottom: 10px;
     margin-top: 10px;
+}
+
+.api-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-soft);
+    border-radius: 15px;
+    box-shadow: var(--shadow-card);
+    padding: 16px 20px;
+    width: min(100%, 420px);
+    transition: background 0.5s ease, box-shadow 0.5s ease;
+}
+
+.api-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text-main);
+}
+
+.api-label-note {
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: var(--text-sub);
+}
+
+.api-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.api-input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--border-soft);
+    background: var(--input-bg);
+    color: var(--text-main);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    font-family: var(--font-main);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.api-input::placeholder {
+    color: var(--text-sub);
+    opacity: 0.7;
+}
+
+.api-input:focus {
+    border-color: var(--color-x);
+    box-shadow: 0 0 0 3px rgba(77, 238, 234, 0.15);
+}
+
+.api-save-btn {
+    flex-shrink: 0;
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: var(--font-main);
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+.api-save-btn:hover {
+    opacity: 0.85;
+}
+
+.api-save-btn:active {
+    transform: scale(0.95);
+}
+
+.api-status {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    margin-top: 10px;
+    min-height: 1.1rem;
 }
 
 .status {
@@ -114,6 +204,7 @@ h1 {
     margin-bottom: 20px;
     width: 100%;
     aspect-ratio: 1/1;
+    box-shadow: inset 0 0 0 1px var(--border-soft);
 }
 
 .block {
@@ -159,7 +250,11 @@ h1 {
     cursor: pointer;
     width: 100%;
     margin-bottom: 10px;
-    transition: transform 0.1s;
+    transition: transform 0.1s, opacity 0.2s ease;
+}
+
+.btn:hover {
+    opacity: 0.9;
 }
 
 .btn:active {
@@ -167,7 +262,7 @@ h1 {
 }
 
 .scoreboard {
-    background-color: var(--bg-gradient);
+    background: var(--card-bg);
     border-radius: 15px;
     padding: 15px;
     box-shadow: var(--shadow-card);
@@ -175,41 +270,61 @@ h1 {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    width: 90%;
-    max-width: 400px;
+    width: min(100%, 420px);
     color: var(--text-main);
-    border: 1px solid rgba(255, 255, 255, 0.082);
+    border: 1px solid var(--border-soft);
     transition: background 0.5s ease, box-shadow 0.5s ease;
 }
+
 .scores {
     display: flex;
     justify-content: space-between;
     flex-direction: row;
     gap: 10px;
     margin-top: 10px;
+    width: 100%;
 }
+
 .scorebox {
-    background-color: rgb(0, 0, 0);
-    color: rgb(255, 255, 255);
-    padding: 6px 5px;
-    border-radius: 6px;
-    font-size: 0.5rem;
-    font-weight: 700;
+    background: var(--surface-strong);
+    color: var(--btn-text);
+    padding: 10px 12px;
+    border-radius: 10px;
     min-width: 120px;
-    text-align: center;
-    font-weight: 700;
     flex: 1;
-    text-align: center;
     display: flex;
+    flex-direction: column;
+    gap: 4px;
     font-size: 1rem;
     justify-content: center;
     align-items: center;
-    border: 1px solid rgba(255, 255, 255, 0.559);
-
+    border: 1px solid var(--border-soft);
 }
 
 .scorebox span {
-    margin-top: 5px;
     font-size: 1rem;
     display: block;
+}
+
+@media (max-width: 520px) {
+    .game {
+        padding: 18px;
+    }
+
+    .api-controls {
+        flex-direction: column;
+    }
+
+    .api-save-btn {
+        width: 100%;
+    }
+
+    .scores {
+        flex-direction: column;
+    }
+
+    .scorebox {
+        min-width: 0;
+        width: 100%;
+    }
 }

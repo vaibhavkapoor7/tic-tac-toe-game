@@ -1,10 +1,13 @@
 const modes = ['easy', 'hard', 'pvp'];
 let currentModeIndex = 1;
 
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
 let board = ['', '', '', '', '', '', '', '', ''];
 let gameActive = true;
 let currentPlayer = 'X';
 let scores = { X: 0, O: 0, Draw: 0 };
+let geminiModel = null;
 
 const winningConditions = [
     [0, 1, 2],
@@ -16,11 +19,6 @@ const winningConditions = [
     [0, 4, 8],
     [2, 4, 6]
 ];
-import { GoogleGenerativeAI } from "@google/generative-ai";
-const API_KEY = "-- YOUR API KEY HERE --";
-
-const genAI = new GoogleGenerativeAI(API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 const blocks = document.querySelectorAll('.block');
 const statusDisplay = document.getElementById('status');
 const modeBtn = document.getElementById('mode');
@@ -29,11 +27,64 @@ const playerO = document.getElementById('player2');
 const scoreXDisplay = document.getElementById('scoreX');
 const scoreODisplay = document.getElementById('scoreO');
 const scoreDrawDisplay = document.getElementById('scoreDraw');
+const apiKeyInput = document.getElementById('api-key');
+const saveApiKeyBtn = document.getElementById('save-api-key');
+const apiKeyStatus = document.getElementById('api-key-status');
+const resetBtn = document.getElementById('reset-btn');
+
+function setApiKey(apiKey) {
+    const trimmedKey = apiKey.trim();
+
+    if (!trimmedKey) {
+        geminiModel = null;
+        localStorage.removeItem('geminiApiKey');
+        apiKeyStatus.innerText = 'Add your Gemini API key to enable hard mode.';
+        return false;
+    }
+
+    const genAI = new GoogleGenerativeAI(trimmedKey);
+    geminiModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    localStorage.setItem('geminiApiKey', trimmedKey);
+    apiKeyStatus.innerText = 'Gemini API key saved in this browser.';
+    return true;
+}
+
+function hasGeminiKey() {
+    return Boolean(geminiModel);
+}
+
+function loadSavedApiKey() {
+    const savedApiKey = localStorage.getItem('geminiApiKey') || '';
+    apiKeyInput.value = savedApiKey;
+
+    if (savedApiKey) {
+        setApiKey(savedApiKey);
+    } else {
+        apiKeyStatus.innerText = 'Add your Gemini API key to enable hard mode.';
+    }
+}
+
+function getStatusMessage() {
+    if (modes[currentModeIndex] === 'pvp') {
+        return `Player ${currentPlayer} turn`;
+    }
+
+    if (modes[currentModeIndex] === 'hard' && !hasGeminiKey()) {
+        return 'Enter your Gemini API key to play hard mode.';
+    }
+
+    return currentPlayer === 'X' ? 'Your turn' : 'COM is thinking...';
+}
 
 blocks.forEach(block => block.addEventListener('click', handleBlockClick));
 modeBtn.addEventListener('click', togglemode);
 document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-document.querySelector('.btn:not(.btn-mode)').addEventListener('click', resetGame);
+resetBtn.addEventListener('click', resetGame);
+saveApiKeyBtn.addEventListener('click', () => {
+    setApiKey(apiKeyInput.value);
+    updateModesUI();
+    resetGame();
+});
 
 
 function togglemode() {
@@ -47,7 +98,7 @@ function resetGame() {
     board = ['', '', '', '', '', '', '', '', ''];
     gameActive = true;
     currentPlayer = 'X';
-    statusDisplay.innerText = `Player ${currentPlayer} turn`;
+    statusDisplay.innerText = getStatusMessage();
     blocks.forEach(block => {
         block.innerText = '';
         block.className = 'block';
@@ -83,7 +134,12 @@ function processMove(block, index) {
         if (currentPlayer === 'O') {
             statusDisplay.innerText = `COM is thinking...`;
             if (Mode === 'hard') {
-                setTimeout(() => makeGeminiMove(), 500);
+                if (hasGeminiKey()) {
+                    setTimeout(() => makeGeminiMove(), 500);
+                } else {
+                    statusDisplay.innerText = 'Enter your Gemini API key for hard mode.';
+                    currentPlayer = 'X';
+                }
             } else {
                 setTimeout(() => computerMoveEasy(), 500);
             }
@@ -100,6 +156,10 @@ function updateBlock(block, index, player) {
 }
 async function makeGeminiMove() {
     if (!gameActive) return;
+    if (!hasGeminiKey()) {
+        statusDisplay.innerText = 'Enter your Gemini API key for hard mode.';
+        return;
+    }
 
     // Create a description of the board state for Gemini
     let boardDescription = board.map((val, idx) => val === '' ? idx : val).join(',');
@@ -116,7 +176,7 @@ async function makeGeminiMove() {
             `;
 
     try {
-        const result = await model.generateContent(prompt);
+        const result = await geminiModel.generateContent(prompt);
         const response = await result.response;
         let moveText = response.text().trim();
 
@@ -187,7 +247,7 @@ function updateScores() {
 function updateModesUI() {
     const Mode = modes[currentModeIndex];
     if (Mode === 'hard') {
-        modeBtn.innerText = 'Mode: 1 Player (Hard)';
+        modeBtn.innerText = hasGeminiKey() ? 'Mode: 1 Player (Hard)' : 'Mode: 1 Player (Hard - Add Key)';
         playerX.innerText = 'YOU -';
         playerO.innerText = 'COM -';
     }
@@ -202,5 +262,6 @@ function updateModesUI() {
         playerO.innerText = 'PLAYER 2 -';
     }
 }
+loadSavedApiKey();
 updateModesUI();
 updateScores(); 
